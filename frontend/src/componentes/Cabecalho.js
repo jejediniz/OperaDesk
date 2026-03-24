@@ -17,8 +17,14 @@ export default function Cabecalho() {
     <header className="app-header">
       <div className="app-header__inner">
         <div className="app-header__title">
-          <h1>Deskora</h1>
-          <p>Gerencie solicitações, acompanhe o time e mantenha a TI ágil.</p>
+          <img
+            src="/img/logo.png"
+            alt="Deskora"
+            className="brand-logo brand-logo--header"
+          />
+          <p className="app-header__subtitle">
+            Gerencie solicitações, acompanhe o time e mantenha a TI agil.
+          </p>
         </div>
 
         <nav className="top-nav">

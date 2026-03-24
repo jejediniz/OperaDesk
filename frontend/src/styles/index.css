@@ -255,10 +255,25 @@ body {
    HEADER / NAV
 ========================= */
 .app-header {
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(255,255,255,.18), transparent 34%),
+    radial-gradient(circle at top right, rgba(191,219,254,.22), transparent 28%),
+    linear-gradient(135deg, #1d4ed8 0%, #1e40af 52%, #172554 100%);
   color: #fff;
-  padding: var(--spacing-lg) 0 var(--spacing-md);
-  box-shadow: 0 20px 48px rgba(15,23,42,.3);
+  padding: 26px 0 20px;
+  box-shadow: 0 20px 48px rgba(15,23,42,.24);
+}
+
+.app-header::after {
+  content: "";
+  position: absolute;
+  inset: auto -12% -72px;
+  height: 140px;
+  background: linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,.08));
+  filter: blur(28px);
+  pointer-events: none;
 }
 
 .app-header__inner {
@@ -267,57 +282,86 @@ body {
   padding: 0 var(--spacing-lg);
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  gap: 18px;
   align-items: center;
+  position: relative;
+  z-index: 1;
 }
 
 .app-header__title {
+  max-width: 560px;
   text-align: center;
 }
 
-.app-header__title h1 {
-  margin: 0;
-  font-size: 28px;
-  letter-spacing: -0.02em;
+.brand-logo {
+  display: block;
+  max-width: 100%;
+  height: auto;
 }
 
-.app-header__title p {
-  margin: var(--spacing-xs) 0 0;
-  color: rgba(255,255,255,.8);
+.brand-logo--header {
+  width: min(220px, 48vw);
+  margin: 0 auto;
+  filter: drop-shadow(0 10px 24px rgba(15, 23, 42, .18));
+}
+
+.app-header__subtitle {
+  margin: 10px 0 0;
+  color: rgba(255,255,255,.84);
   font-size: 14px;
+  line-height: 1.5;
 }
 
 .top-nav {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
   justify-content: center;
   width: 100%;
+  max-width: 920px;
+  padding: 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.14);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+  backdrop-filter: blur(10px);
 }
 
 .nav-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255,255,255,.15);
+  min-height: 40px;
+  background: rgba(255,255,255,.08);
   color: #fff;
-  border: 1px solid transparent;
+  border: 1px solid rgba(255,255,255,.08);
   border-radius: 999px;
-  padding: 8px 18px;
+  padding: 9px 16px;
   font-weight: 600;
+  font-size: 14px;
   text-decoration: none;
-  transition: background .2s ease, transform .2s ease, border-color .2s ease;
+  transition: background .2s ease, transform .2s ease, border-color .2s ease,
+    box-shadow .2s ease;
+  white-space: nowrap;
 }
 
 .nav-btn.active {
   background: #fff;
   color: var(--primary);
-  border-color: rgba(37,99,235,.2);
+  border-color: rgba(255,255,255,.22);
+  box-shadow: 0 12px 24px rgba(15, 23, 42, .16);
 }
 
 .nav-btn.logout {
-  color: #111827;
-  background: #fff;
+  color: #dbeafe;
+  background: rgba(15,23,42,.22);
+  border-color: rgba(255,255,255,.12);
+}
+
+.nav-btn:hover {
+  background: rgba(255,255,255,.16);
+  border-color: rgba(255,255,255,.18);
+  transform: translateY(-1px);
 }
 
 .nav-btn:focus-visible {
@@ -325,9 +369,33 @@ body {
   outline-offset: 2px;
 }
 
-@media (min-width: 768px) {
+@media (max-width: 767px) {
+  .app-header {
+    padding: 22px 0 16px;
+  }
+
   .app-header__inner {
-    gap: var(--spacing-lg);
+    gap: 14px;
+  }
+
+  .brand-logo--header {
+    width: min(180px, 52vw);
+  }
+
+  .app-header__subtitle {
+    font-size: 13px;
+    max-width: 34ch;
+    margin-top: 8px;
+  }
+
+  .top-nav {
+    border-radius: 24px;
+    padding: 10px;
+  }
+
+  .nav-btn {
+    width: 100%;
+    min-height: 42px;
   }
 }
 
@@ -571,10 +639,9 @@ body {
   margin-bottom: var(--spacing-xl);
 }
 
-.login-header h1 {
-  margin: 0;
-  font-size: 32px;
-  font-weight: 600;
+.brand-logo--login {
+  width: min(360px, 78vw);
+  margin: 0 auto;
 }
 
 .login-header p {
@@ -622,6 +689,16 @@ body {
 .auth-actions {
   display: flex;
   justify-content: center;
+}
+
+.app-footer {
+  padding: var(--spacing-lg);
+  display: flex;
+  justify-content: center;
+}
+
+.brand-logo--footer {
+  width: min(180px, 42vw);
 }
 
 /* =========================

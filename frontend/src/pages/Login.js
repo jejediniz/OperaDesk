@@ -44,7 +44,11 @@ export default function Login() {
     <>
       {/* CABEÇALHO DO LOGIN (SEM BOTÕES) */}
       <header className="login-header">
-        <h1>Deskora</h1>
+        <img
+          src="/img/logo.png"
+          alt="Deskora"
+          className="brand-logo brand-logo--login"
+        />
         <p>Bem-vindo novamente! Entre para acompanhar e resolver demandas.</p>
       </header>
 
