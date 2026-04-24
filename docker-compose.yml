@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: operadesk-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: operadesk
+      POSTGRES_USER: operadesk
+      POSTGRES_PASSWORD: operadesk
+    ports:
+      - "5433:5432"
+    volumes:
+      - operadesk_postgres_data:/var/lib/postgresql/data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/001_schema.sql:ro
+      - ./db/init/002_seed_admin.sql:/docker-entrypoint-initdb.d/002_seed_admin.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U operadesk -d operadesk"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  operadesk_postgres_data:

@@ -1,5 +1,6 @@
 # OperaDesk
-OperaDesk é um sistema de chamados para pequenas e médias empresas, com backend Node.js/Express e frontend React.
+
+OperaDesk é um sistema de chamados em Next.js, com frontend e API na mesma aplicação.
 
 **Recursos principais**
 - Autenticação com JWT e controle de permissões (admin, técnico, usuário)
@@ -9,58 +10,68 @@ OperaDesk é um sistema de chamados para pequenas e médias empresas, com backen
 - Dashboard com métricas básicas
 
 **Estrutura do projeto**
-- `backend/` API REST, autenticação, validações, banco de dados
-- `frontend/` SPA React
-- `backend/sql/schema.sql` schema base para PostgreSQL
+- `app/` rotas, telas e API do Next.js (App Router + Route Handlers)
+- `src/` componentes, contextos, serviços do frontend e camada server reutilizada pela API
+- `src/server/` services, repositories, validações e conexão com PostgreSQL
+- `db/schema.sql` schema base para PostgreSQL
+- `db/init/` scripts de inicialização executados pelo Postgres no primeiro start
 
 ## Como rodar localmente
 
-**Backend**
-1. Copie `backend/.env.example` para `backend/.env` e ajuste valores.
-2. Suba o banco PostgreSQL.
-3. Execute o schema em `backend/sql/schema.sql` e, se o banco já existe, rode `psql -f backend/sql/migrations/002_add_tecnico_id.sql`.
-   - O schema agora adiciona o campo `tecnico_id` e relacionamentos para permitir atribuição de técnicos.
-4. Instale dependências e rode:
-   - `npm install`
-   - `npm run dev`
-   - `npm run lint` (opcional)
+1. Copie `.env.example` para `.env`.
+2. Instale dependências.
+3. Rode a aplicação completa com banco e Next:
 
-**Frontend**
-1. Copie `frontend/.env.example` para `frontend/.env` e ajuste valores.
-2. Instale dependências e rode:
-   - `npm install`
-   - `npm start`
+```bash
+cp .env.example .env
+npm install
+npm run dev:full
+```
+
+A aplicação sobe em `http://localhost:3000`. As telas e a API rodam juntas:
+
+- `GET /login`
+- `GET /`
+- `POST /api/auth/login`
+- `GET /api/chamados`
+- `GET /api/users`
 
 ## Variáveis de ambiente
 
-**Backend (`backend/.env`)**
-- `PORT` porta da API
 - `JWT_SECRET` segredo do JWT
 - `JWT_EXPIRES_IN` tempo de expiração do JWT (ex: `8h`)
 - `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` conexão PostgreSQL
-- `CORS_ORIGIN` lista de origens separadas por vírgula
 
-**Frontend (`frontend/.env`)**
-- `REACT_APP_API_URL` URL base da API
+## Banco de dados
 
-## Documentação da API (sugestão)
-Para produção, recomenda-se adicionar Swagger/OpenAPI.
-Opções simples:
-- `swagger-ui-express` + `swagger-jsdoc`
-- `@fastify/swagger` (se migrar para Fastify futuramente)
+O PostgreSQL roda via Docker Compose:
 
-### Endpoints úteis adicionais
-- `GET /users/tecnicos`: lista os usuários do tipo `ti` (acesso restrito a técnicos e administradores) para alimentar seletores de atribuição.
+```bash
+npm run db:up
+npm run db:down
+npm run db:logs
+```
 
-## Paginação e filtros
-O endpoint `GET /chamados` aceita:
-- `page` (default 1)
-- `limit` (default 20, máx 100)
-- `status` (`aberto`, `em_andamento`, `fechado`)
-- `prioridade` (`baixa`, `media`, `alta`)
-- `usuarioId` (apenas para admin/TI)
+O primeiro start cria as tabelas a partir de `db/schema.sql` e também cria um admin de desenvolvimento:
+
+- Email: `admin@operadesk.local`
+- Senha: `admin123`
+
+Para recriar o banco do zero em desenvolvimento:
+
+```bash
+npm run db:reset
+```
+
+Esse comando apaga o volume local do PostgreSQL, então use apenas quando quiser limpar os dados.
+
+## Documentação da API
+
+- `GET /api/docs`: HTML simples com OpenAPI
+- `GET /api/docs/openapi`: JSON OpenAPI
 
 ## Observações de segurança
+
 - Tokens JWT são armazenados em `sessionStorage`
 - Senhas são armazenadas com hash bcrypt
 - Logs não incluem dados sensíveis
