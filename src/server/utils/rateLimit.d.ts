@@ -10,5 +10,5 @@ export interface RateLimitResult {
   resetAt: number
 }
 
-export function consume(key: string, options?: RateLimitOptions): RateLimitResult
-export function reset(key: string): void
+export function consume(key: string, options?: RateLimitOptions): Promise<RateLimitResult>
+export function reset(key: string): Promise<void>

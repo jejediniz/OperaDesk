@@ -1,7 +1,7 @@
 const AppError = require('../utils/AppError')
 const userRepository = require('../repositories/userRepository')
 const logger = require('../utils/logger')
-const { hashSenha } = require('./authService')
+const { compareSenha, hashSenha } = require('./authService')
 
 exports.list = async () => {
   return userRepository.list()
@@ -76,4 +76,33 @@ exports.remove = async (id) => {
   }
 
   return removido
+}
+
+exports.changeOwnPassword = async (userId, { senhaAtual, senhaNova }) => {
+  if (senhaAtual === senhaNova) {
+    throw new AppError('A nova senha deve ser diferente da atual', 400)
+  }
+
+  const row = await userRepository.findCredentialsForPasswordChange(userId)
+
+  if (!row) {
+    throw new AppError('Usuário não encontrado', 404)
+  }
+
+  if (row.ativo === false) {
+    throw new AppError('Conta inativa', 403)
+  }
+
+  const senhaOk = await compareSenha(senhaAtual, row.senha_hash)
+
+  if (!senhaOk) {
+    throw new AppError('Senha atual incorreta', 401)
+  }
+
+  const senha_hash = await hashSenha(senhaNova)
+  await userRepository.update(userId, { senha_hash })
+
+  logger.audit('usuario.senha_alterada_propria', { usuarioId: userId })
+
+  return true
 }

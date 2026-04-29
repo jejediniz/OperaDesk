@@ -1,6 +1,6 @@
 "use client";
 
-import ChamadoRapido from "../../../src/views/ChamadoRapido";
+import ChamadoRapido from "@/features/chamados/ChamadoRapido";
 
 export default function AbrirChamadoPage() {
   return <ChamadoRapido />;

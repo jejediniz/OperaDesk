@@ -1,3 +1,10 @@
+export function formatMoedaBr(value) {
+  if (value === undefined || value === null || value === "") return "—";
+  const n = typeof value === "string" ? Number(value.replace(",", ".")) : Number(value);
+  if (!Number.isFinite(n)) return String(value);
+  return n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
 export function formatDate(value) {
   return value ? new Date(value).toLocaleDateString("pt-BR") : "—";
 }

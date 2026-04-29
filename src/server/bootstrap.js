@@ -2,6 +2,30 @@ const { validateEnv } = require('./config/env')
 const logger = require('./utils/logger')
 
 let booted = false
+let shuttingDown = false
+
+async function shutdown(signal) {
+  if (shuttingDown) return
+  shuttingDown = true
+
+  logger.info('app.shutdown', { signal })
+
+  try {
+    const pool = require('./config/database')
+    await pool.end()
+  } catch (err) {
+    logger.error('app.shutdown_pool', { message: err?.message })
+  }
+
+  try {
+    const { prisma } = require('../lib/prisma')
+    await prisma.$disconnect()
+  } catch (err) {
+    logger.error('app.shutdown_prisma', { message: err?.message })
+  }
+
+  process.exit(0)
+}
 
 function bootstrap() {
   if (booted) return
@@ -15,13 +39,8 @@ function bootstrap() {
     pid: process.pid
   })
 
-  const onShutdown = (signal) => {
-    logger.info('app.shutdown', { signal })
-    process.exit(0)
-  }
-
-  process.once('SIGINT', () => onShutdown('SIGINT'))
-  process.once('SIGTERM', () => onShutdown('SIGTERM'))
+  process.once('SIGINT', () => void shutdown('SIGINT'))
+  process.once('SIGTERM', () => void shutdown('SIGTERM'))
 
   process.on('unhandledRejection', (reason) => {
     logger.error('unhandled_rejection', {

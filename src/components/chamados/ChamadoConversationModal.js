@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useAuth } from "../../contextos/authContext";
-import { useToast } from "../../contextos/toastContext";
+import { useAuth } from "@/contexts/authContext";
+import { useToast } from "@/contexts/toastContext";
 import {
   useInteracoesChamado,
   useCriarInteracaoMutation
-} from "../../hooks/useChamadosQueries";
-import { PRIORIDADE_LABEL, STATUS_LABEL } from "../../config/chamados";
-import { formatDate } from "../../utils/formatters";
+} from "@/hooks/useChamadosQueries";
+import { PRIORIDADE_LABEL, STATUS_LABEL } from "@/constants/chamados";
+import { formatDate } from "@/utils/formatters";
 import { Button, Textarea } from "../ui";
 
 function getAutorPerfil(autor) {

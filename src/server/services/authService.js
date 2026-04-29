@@ -36,6 +36,10 @@ async function hashSenha(senha) {
   return bcrypt.hash(senha, bcryptRounds)
 }
 
+async function compareSenha(senha, senhaHash) {
+  return bcrypt.compare(senha, senhaHash)
+}
+
 async function registrar({ nome, email, senha, tipo, admin, ativo }) {
   const existente = await userRepository.findByEmail(email)
 
@@ -95,6 +99,7 @@ async function getSessaoAtual(userId) {
 
 module.exports = {
   INVALID_CREDENTIALS_MESSAGE,
+  compareSenha,
   getSessaoAtual,
   hashSenha,
   login,

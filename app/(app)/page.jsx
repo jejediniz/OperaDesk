@@ -1,6 +1,6 @@
 "use client";
 
-import Inicio from "../../src/views/Inicio";
+import Inicio from "@/features/dashboard/Inicio";
 
 export default function HomePage() {
   return <Inicio />;

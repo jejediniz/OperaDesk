@@ -23,6 +23,14 @@ async function findById(id) {
   return result.rows[0]
 }
 
+async function findCredentialsForPasswordChange(id) {
+  const result = await pool.query(
+    'SELECT id, senha_hash, ativo FROM usuarios WHERE id = $1',
+    [id]
+  )
+  return result.rows[0]
+}
+
 async function findByEmail(email) {
   const result = await pool.query(
     'SELECT id, nome, email, senha_hash, tipo, admin, ativo FROM usuarios WHERE email = $1',
@@ -70,6 +78,7 @@ module.exports = {
   list,
   listByTipo,
   findById,
+  findCredentialsForPasswordChange,
   findByEmail,
   create,
   update,

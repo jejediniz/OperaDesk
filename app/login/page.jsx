@@ -1,11 +1,12 @@
 "use client";
 
 import { Suspense } from "react";
-import Login from "../../src/views/Login";
+import Login from "@/features/auth/Login";
+import AppShellLoading from "@/components/layout/AppShellLoading";
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="center-page"><div className="loading">Carregando...</div></div>}>
+    <Suspense fallback={<AppShellLoading variant="login" />}>
       <Login />
     </Suspense>
   );

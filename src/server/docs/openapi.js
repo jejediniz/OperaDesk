@@ -223,6 +223,31 @@ const spec = {
         summary: 'Sessão simplificada via cookie',
         security: [{ cookieAuth: [] }],
         responses: { 200: okJson('Acesso autorizado') }
+      },
+      patch: {
+        tags: ['Users'],
+        summary: 'Alterar a própria senha',
+        security: [{ cookieAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['senhaAtual', 'senhaNova'],
+                properties: {
+                  senhaAtual: { type: 'string', minLength: 8 },
+                  senhaNova: { type: 'string', minLength: 8, maxLength: 120 }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          200: okJson('Senha atualizada'),
+          400: errorJson('Validação ou nova senha inválida'),
+          401: errorJson('Senha atual incorreta')
+        }
       }
     },
     '/users/tecnicos': {

@@ -2,9 +2,11 @@ import js from '@eslint/js'
 import globals from 'globals'
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
+import tseslint from 'typescript-eslint'
 
-export default [
+export default tseslint.config(
   js.configs.recommended,
+  ...tseslint.configs.recommended,
   {
     ignores: [
       '.next/**',
@@ -12,10 +14,7 @@ export default [
       'coverage/**',
       'public/**',
       'next-env.d.ts',
-      '**/*.d.ts',
-      // Tipos puros e código TS são checados pelo `npm run typecheck`
-      '**/*.ts',
-      '**/*.tsx'
+      '**/*.d.ts'
     ]
   },
   {
@@ -48,8 +47,11 @@ export default [
       'react/prop-types': 'off',
       'react/no-unescaped-entities': 'off',
       'react/display-name': 'off',
+      '@typescript-eslint/no-require-imports': 'off',
+      '@typescript-eslint/no-empty-object-type': 'off',
       'no-console': ['warn', { allow: ['warn', 'error', 'info'] }],
-      'no-unused-vars': [
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
         'warn',
         {
           argsIgnorePattern: '^_',
@@ -77,4 +79,4 @@ export default [
       }
     }
   }
-]
+)

@@ -1,4 +1,4 @@
-export function Skeleton({ width, height = 14, radius = 6, className = "", style }) {
+export function Skeleton({ width, height = 14, radius = 5, className = "", style }) {
   const merged = {
     width: width ?? "100%",
     height,

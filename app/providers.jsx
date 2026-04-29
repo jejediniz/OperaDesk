@@ -1,11 +1,11 @@
 "use client";
 
-import { AuthProvider } from "../src/contextos/authContext";
-import { ChamadosProvider } from "../src/contextos/chamadosContext";
-import { ConfirmProvider } from "../src/contextos/confirmContext";
-import { QueryProvider } from "../src/contextos/queryProvider";
-import { ThemeProvider } from "../src/contextos/themeContext";
-import { ToastProvider } from "../src/contextos/toastContext";
+import { AuthProvider } from "@/contexts/authContext";
+import { ChamadosProvider } from "@/contexts/chamadosContext";
+import { ConfirmProvider } from "@/contexts/confirmContext";
+import { QueryProvider } from "@/contexts/queryProvider";
+import { ThemeProvider } from "@/contexts/themeContext";
+import { ToastProvider } from "@/contexts/toastContext";
 
 export default function Providers({ children }) {
   return (

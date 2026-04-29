@@ -8,13 +8,14 @@ function json(data, status = 200) {
 }
 
 function success(data, message = 'OK', meta = null) {
-  const payload = { success: true, message, data }
+  // JSON.stringify omite propriedades `undefined`; o cliente sempre precisa poder ler `data`.
+  const payload = { success: true, message, data: data === undefined ? null : data }
   if (meta) payload.meta = meta
   return json(payload)
 }
 
 function created(data, message = 'Criado com sucesso') {
-  return json({ success: true, message, data }, 201)
+  return json({ success: true, message, data: data === undefined ? null : data }, 201)
 }
 
 function noContent() {
@@ -28,7 +29,8 @@ function handleError(error, context = {}) {
 
   const payload = { success: false, error: { message } }
 
-  if (error?.details && process.env.NODE_ENV !== 'production') {
+  /* Detalhes de validação (400) devem aparecer também em produção — não expõem segredos. */
+  if (error?.details) {
     payload.error.details = error.details
   }
 

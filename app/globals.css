@@ -1,1 +1,7 @@
-@import "../src/styles/index.css";
+/* Tailwind 4: tema + utilitários sem Preflight.
+   O stylesheet principal (src/styles/index.css) é importado em app/layout.jsx
+   para evitar que o parser do @tailwindcss/postcss analise o ficheiro grande
+   como continuação deste e falhe em alguns ambientes (ex.: Turbopack). */
+@layer theme, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);

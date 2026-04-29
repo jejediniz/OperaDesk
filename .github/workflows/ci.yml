@@ -60,6 +60,9 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Build Next.js
+        run: npm run build
+
       - name: Migrar DB
         run: npm run db:migrate
 

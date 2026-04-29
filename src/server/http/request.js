@@ -31,7 +31,9 @@ function queryObject(request) {
 }
 
 async function routeParams(context) {
-  return Promise.resolve(context?.params || {})
+  if (!context?.params) return {}
+  const raw = context.params
+  return typeof raw?.then === 'function' ? await raw : raw
 }
 
 function getClientIp(request) {

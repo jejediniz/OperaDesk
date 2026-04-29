@@ -27,7 +27,13 @@ const updateUserSchema = Joi.object({
   ativo: Joi.boolean().optional()
 }).min(1)
 
+const changeOwnPasswordSchema = Joi.object({
+  senhaAtual: senhaRule.required(),
+  senhaNova: senhaRule.required()
+})
+
 module.exports = {
+  changeOwnPasswordSchema,
   createUserSchema,
   updateUserSchema
 }

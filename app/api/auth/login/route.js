@@ -20,8 +20,10 @@ export async function POST(request) {
     const ipKey = `login:ip:${ip}`
     const emailKey = `login:email:${body.email.toLowerCase()}`
 
-    const ipCheck = rateLimit.consume(ipKey, { max: 20, windowMs: 60_000 })
-    const emailCheck = rateLimit.consume(emailKey, { max: 5, windowMs: 60_000 })
+    const [ipCheck, emailCheck] = await Promise.all([
+      rateLimit.consume(ipKey, { max: 20, windowMs: 60_000 }),
+      rateLimit.consume(emailKey, { max: 5, windowMs: 60_000 })
+    ])
 
     if (!ipCheck.allowed || !emailCheck.allowed) {
       const retryMs = Math.max(ipCheck.retryAfterMs, emailCheck.retryAfterMs)
@@ -40,7 +42,7 @@ export async function POST(request) {
     try {
       const { token, usuario } = await authService.login(body)
 
-      rateLimit.reset(emailKey)
+      await rateLimit.reset(emailKey)
 
       await auditService.record({
         action: 'auth.login.sucesso',

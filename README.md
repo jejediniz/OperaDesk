@@ -1,45 +1,22 @@
 # OperaDesk
 
-Sistema de chamados em Next.js (App Router) com frontend e API na mesma aplicação. PostgreSQL via Docker, autenticação JWT em cookie `httpOnly` e controle de papéis (admin, técnico, usuário comum).
+## Finalidade
+
+O **OperaDesk** é um sistema web de gestão de chamados de suporte/operacional, construído em Next.js (App Router). Oferece painel para administradores e equipe de TI, área para usuários comuns abrirem e acompanharem chamados, gestão de usuários e patrimônio (ativos). A autenticação usa JWT em cookie `httpOnly`, com papéis (admin, técnico, usuário comum).
 
 ## Stack
 
-- Next.js 16 (App Router, Route Handlers, `proxy.js` no boundary de rede)
+- Next.js 16 (App Router, Route Handlers, `proxy.js` no boundary de rede com validação JWT)
 - React 19, React Query 5, Joi 17, bcrypt 6
-- PostgreSQL 16 (via Docker), `node-pg-migrate` para migrações
-- Vitest + Supertest para testes
-- ESLint flat config, Prettier, Husky + lint-staged
+- PostgreSQL (migrações com `node-pg-migrate`); Prisma Client usado na camada de **ativos**
+- Redis 7 opcional no `docker-compose` para rate limit distribuído no login (`REDIS_URL`)
+- Vitest para testes; ESLint flat config; Prettier; Husky + lint-staged
 
-## Estrutura
+## Como rodar localmente
 
-```
-app/                    Rotas Next (UI + API)
-  api/                  Route handlers (REST)
-src/
-  components/           UI compartilhada
-  contextos/            React contexts (auth, chamados, theme, toast, confirm)
-  hooks/                React Query hooks, focus trap, animated number
-  services/             HTTP client baseado em fetch + clients de API
-  views/                Telas (Inicio, Chamados, Usuarios, Login...)
-  server/               Camada de servidor reutilizada pelas rotas
-    config/             env, database
-    http/               response, auth, cookies, request (módulos coesos)
-    auth/policies.js    Regras de autorização centralizadas
-    services/           Regras de negócio
-    repositories/       Acesso a dados (pg)
-    utils/              logger, AppError, rateLimit
-    validators/         Schemas Joi
-db/
-  migrations/           node-pg-migrate (fonte da verdade)
-  schema.sql            Snapshot de referência humana
-tests/                  Vitest
-```
-
-## Setup local
-
-1. Copie `.env.example` para `.env` e preencha `JWT_SECRET` (use `openssl rand -base64 48`).
-2. Instale dependências.
-3. Suba o Postgres e o servidor de desenvolvimento.
+1. Copie `.env.example` para `.env` e preencha `JWT_SECRET` (por exemplo: `openssl rand -base64 48`).
+2. Instale dependências e suba o Postgres.
+3. Rode as migrações e o servidor de desenvolvimento.
 
 ```bash
 cp .env.example .env
@@ -55,80 +32,114 @@ Ou em um único passo (sobe Postgres e Next):
 npm run dev:full
 ```
 
-Aplicação em `http://localhost:3000`. Usuário admin de desenvolvimento (criado via migration):
-
-
-
-A migration de seed só roda fora de produção (`NODE_ENV !== 'production'`).
-
-## Scripts importantes
-
-- `npm run dev` / `npm run dev:full`
-- `npm run build` / `npm run start`
-- `npm test` / `npm run test:watch` / `npm run test:coverage`
-- `npm run lint` / `npm run lint:fix`
-- `npm run format` / `npm run format:check`
-- `npm run typecheck`
-- `npm run db:migrate` / `db:migrate:down` / `db:migrate:create <nome>`
-- `npm run db:reset` (apaga volume e recria, **dev only**)
+Aplicação em `http://localhost:3000`. Usuário administrador de desenvolvimento criado pela migration de seed (somente quando `NODE_ENV !== 'production'`): **admin@operadesk.local**.
 
 ## Variáveis de ambiente
 
-| Var                  | Descrição                                                     |
-| -------------------- | ------------------------------------------------------------- |
-| `JWT_SECRET`         | ≥32 chars; em produção valores fracos abortam o boot          |
-| `JWT_EXPIRES_IN`     | Ex.: `8h`, `24h`                                              |
-| `BCRYPT_ROUNDS`      | Custo do bcrypt; mínimo 12 em prod                            |
-| `AUTH_COOKIE_NAME`   | Nome do cookie; em prod recebe prefixo `__Host-` automático   |
-| `AUTH_COOKIE_MAX_AGE`| Tempo de vida em segundos                                     |
-| `LOG_LEVEL`          | `debug` \| `info` \| `warn` \| `error`                        |
-| `DB_*`               | Conexão Postgres                                              |
-| `DATABASE_URL`       | Usada pelo `node-pg-migrate`                                  |
+| Variável              | Descrição                                                                                                      |
+| --------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `JWT_SECRET`          | ≥32 caracteres; em produção valores fracos abortam o boot                                                      |
+| `JWT_EXPIRES_IN`      | Ex.: `8h`, `24h`                                                                                               |
+| `BCRYPT_ROUNDS`       | Custo do bcrypt; mínimo 12 em produção                                                                         |
+| `AUTH_COOKIE_NAME`    | Nome do cookie; em produção recebe prefixo `__Host-` automático                                                |
+| `AUTH_COOKIE_MAX_AGE` | Tempo de vida em segundos                                                                                      |
+| `LOG_LEVEL`           | `debug` \| `info` \| `warn` \| `error`                                                                         |
+| `DB_*`                | Conexão Postgres (vide `.env.example`)                                                                         |
+| `DATABASE_URL`        | Usada pelo `node-pg-migrate`                                                                                   |
+| `REDIS_URL`           | Opcional: rate limit de login distribuído (ex.: `redis://localhost:6379`); sem isso o contador fica em memória |
 
-## Segurança
+Detalhes adicionais de segurança e endpoints permanecem alinhados à implementação em `app/api/` e `src/server/`.
 
-- Cookie de sessão `httpOnly`, `SameSite=Lax`, `Secure` em prod, prefixo `__Host-` em prod
-- Login com mensagem genérica e tempo constante mesmo em e‑mails inexistentes
-- Rate limit por IP e por e‑mail no `/api/auth/login`
-- Headers de segurança (CSP, HSTS, X-Frame-Options, COOP, CORP, Permissions-Policy)
-- Senhas com bcrypt cost ≥ 12 em produção
-- Logs com redact de chaves sensíveis (`senha`, `token`, `authorization`, etc.)
+Para uma visão de **camadas e responsabilidades** (onde colocar código novo), veja [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+
+## Estrutura de pastas
+
+```
+proxy.js                 Boundary de rede Next.js (valida JWT antes do painel)
+app/                     Rotas Next.js: páginas (UI) e route handlers (`app/api/`)
+src/
+  features/              Telas e lógica de interface por domínio (composição de páginas)
+    dashboard/             Início / métricas / painéis do dashboard
+    chamados/              Lista de chamados (admin/TI e fluxo do cliente), formulários rápidos, hooks de tela
+    ativos/                Patrimônio / ativos (views e formulários)
+    usuarios/               Listagem e criação de usuários
+    auth/                   Tela de login
+    common/                 Páginas compartilhadas (ex.: não encontrado)
+  components/
+    ui/                     Componentes genéricos (botão, card, input, skeleton…)
+    layout/                 Shell: cabeçalho, rodapé, container, protected shell, tema, atalhos
+    auth/                   Controle de papel na UI (ex.: `RoleGuard`)
+    chamados/               Componentes específicos de chamados reutilizáveis (ex.: modal de conversa)
+  contexts/                 React contexts (auth, chamados, tema, toast, confirmação, query)
+  hooks/                    Hooks reutilizáveis (queries, debounce, focus trap, etc.)
+  services/api/             Cliente HTTP (`http.js`) e funções que chamam a API REST (`*Api.js`)
+  server/                   Camada de servidor usada pelas rotas `app/api/*`:
+    config/                 `env`, `database` (pool `pg`)
+    http/                   response, auth, cookies, request
+    auth/policies.js        Autorização centralizada
+    services/               Regras de negócio
+    repositories/           Acesso a dados (SQL via `pg`; ativos também via Prisma)
+    validators/             Schemas Joi
+    utils/                  logger, AppError, rate limit
+  constants/                Rótulos, filtros e constantes de domínio (chamados, ativos)
+  lib/                      Singleton Prisma (`prisma.js`)
+  utils/                    Formatadores e helpers de front
+  styles/                   CSS global complementar (importado pelo `app/layout.jsx`)
+prisma/                     `schema.prisma` (Prisma; usado principalmente em ativos)
+db/
+  migrations/               Fonte da verdade do schema (node-pg-migrate)
+  schema.sql                Snapshot de referência humana (não executado automaticamente)
+tests/                      Testes Vitest (servidor)
+```
+
+Alias TypeScript/JavaScript: `@/*` → `src/*`, `@server/*` → `src/server/*`, `@app/*` → `app/*`.
+
+## Onde alterar (mapa rápido)
+
+| Área                    | Onde mexer                                                                                                                                                                             |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Dashboard (início)**  | `src/features/dashboard/` (`Inicio.js`, `MetricsGrid.js`, `DashboardPanels.js`, `useDashboardData.js`, …) e rota `app/(app)/page.jsx`                                                  |
+| **Chamados**            | `src/features/chamados/` (telas e hooks de UI); `src/components/chamados/`; API em `app/api/chamados/`; regras em `src/server/services/chamadosService.js` e repositórios relacionados |
+| **Usuários**            | `src/features/usuarios/`; `app/(app)/usuarios/`; `app/api/users/`; `src/server/services/userService.js`                                                                                |
+| **Ativos / patrimônio** | `src/features/ativos/`; `app/(app)/ativos/`; `app/api/ativos/`; `src/server/services/ativosService.js` (Prisma)                                                                        |
+| **Autenticação**        | `src/features/auth/Login.js`; `app/login/`; `app/api/auth/`; `src/server/services/authService.js`; contexto `src/contexts/authContext.js`; políticas `src/server/auth/policies.js`     |
+| **Conexão com banco**   | Pool SQL: `src/server/config/database.js`; variáveis: `src/server/config/env.js`; migrações: `db/migrations/`; Prisma: `prisma/schema.prisma` e `src/lib/prisma.js`                    |
+| **Estilos globais**     | `app/globals.css` (entrada Tailwind 4); tokens e utilitários em `src/styles/index.css` (import em `app/layout.jsx`)                                                                    |
+
+## Comandos principais
+
+| Comando                                   | Uso                                                                |
+| ----------------------------------------- | ------------------------------------------------------------------ |
+| `npm install`                             | Instalar dependências (dispara `prisma generate` no `postinstall`) |
+| `npm run dev`                             | Servidor de desenvolvimento Next                                   |
+| `npm run dev:full`                        | Sobe Postgres (e Redis do compose) + Next                          |
+| `npm run build`                           | Build de produção                                                  |
+| `npm start`                               | Servidor após `build`                                              |
+| `npm run lint` / `npm run lint:fix`       | ESLint                                                             |
+| `npm run format` / `npm run format:check` | Prettier                                                           |
+| `npm run typecheck`                       | `tsc --noEmit`                                                     |
+| `npm test` / `npm run test:watch`         | Vitest                                                             |
+| `npm run db:migrate`                      | Aplica migrações (`node-pg-migrate`, usa `DATABASE_URL` no `.env`) |
+| `npm run db:migrate:down`                 | Reverte última migração                                            |
+| `npm run db:migrate:create <nome>`        | Cria arquivo de migração                                           |
+| `npm run db:reset`                        | Derruba compose e volume (**somente dev**)                         |
 
 ## Banco de dados
 
-A criação de tabelas é feita exclusivamente via `node-pg-migrate`. O `docker-compose` apenas sobe um Postgres limpo. O `db/schema.sql` serve de referência humana, **não é executado** automaticamente.
-
-Migrações:
-
-- `1700000000000_initial_schema.js` — tabelas, índices, triggers
-- `1700000000100_seed_admin.js` — admin de desenvolvimento (`NODE_ENV !== 'production'`)
-- `1700000000200_add_constraints_and_search.js` — `ON DELETE SET NULL`, `CHECK` constraints, `pg_trgm` para busca
-
-## Endpoints principais
-
-- `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`
-- `GET /api/chamados`, `POST /api/chamados`
-- `GET /api/chamados/metrics` — agregados para dashboard
-- `GET /api/chamados/:id`, `PUT /api/chamados/:id`, `DELETE /api/chamados/:id`
-- `GET /api/chamados/:id/interacoes`, `POST /api/chamados/:id/interacoes`
-- `GET /api/users`, `POST /api/users`, `GET /api/users/me`, `GET /api/users/tecnicos`
-- `GET /api/users/:id`, `PUT /api/users/:id`, `DELETE /api/users/:id`
-- `GET /api/health`, `GET /api/health/live`
-- `GET /api/docs`, `GET /api/docs/openapi`
+A criação e evolução das tabelas é feita com `node-pg-migrate`. O `docker-compose` sobe um Postgres limpo. O arquivo `db/schema.sql` é apenas referência humana.
 
 ## CI
 
-Workflow `.github/workflows/ci.yml` executa em PRs e push em `main`:
-
-1. `npm ci`
-2. `npm run lint`
-3. `npm run format:check`
-4. `npm run typecheck`
-5. `npm run db:migrate`
-6. `npm test`
+O workflow `.github/workflows/ci.yml` executa lint, format, typecheck, build, migrações e testes.
 
 ## Convenções
 
-- Commits/branches em inglês.
-- Código novo em camelCase / PascalCase. Nomes legados em PT permanecem para reduzir blast radius.
-- Edits triviais: priorize `npm run lint:fix && npm run format`.
+- Commits e branches em inglês são preferidos.
+- Código novo em camelCase / PascalCase. Nomes de negócio em português podem permanecer onde já existem para reduzir impacto.
+- Para ajustes pequenos de estilo: `npm run lint:fix && npm run format`.
+
+## Limpeza recente da arquitetura (manutenção)
+
+- Pastas renomeadas/organizadas: `contexts`, `constants`, `features`, `components/layout`, `services/api`.
+- Removidos: `src/services/api.js` (shim sem uso) e `src/constants/perfis.js` (sem referências no código).
+- A camada `src/server/` foi mantida no mesmo caminho para não quebrar dezenas de imports em `app/api/` e testes; ela corresponde à “camada de serviços” no servidor.

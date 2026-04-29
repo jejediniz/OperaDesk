@@ -1,7 +1,7 @@
 "use client";
 
-import RoleGuard from "../../../src/components/RoleGuard";
-import Chamados from "../../../src/views/Chamados";
+import RoleGuard from "@/components/auth/RoleGuard";
+import Chamados from "@/features/chamados/Chamados";
 
 export default function ChamadosPage() {
   return (

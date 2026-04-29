@@ -7,13 +7,13 @@ import {
   atualizarChamado,
   excluirChamado,
   obterMetricasChamados
-} from "../services/chamadosApi";
+} from "@/services/api/chamadosApi";
 import {
   listarUsuarios,
   listarTecnicos,
   criarUsuario,
   excluirUsuario
-} from "../services/usuariosApi";
+} from "@/services/api/usuariosApi";
 
 export const CHAMADOS_QUERY_KEY = ["chamados"];
 export const CHAMADOS_METRICS_QUERY_KEY = ["chamados", "metrics"];

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "dev:full": "docker compose up -d postgres && next dev",
+    "dev:full": "docker compose up -d postgres redis && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
@@ -23,23 +23,30 @@
     "db:migrate:down": "node-pg-migrate -m db/migrations -j js --envPath .env down",
     "db:migrate:create": "node-pg-migrate -m db/migrations -j js create",
     "logos:transparent": "node scripts/extract-transparent-logos.mjs",
-    "prepare": "husky || true"
+    "prepare": "husky || true",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@prisma/client": "^6.19.3",
     "@tanstack/react-query": "^5.100.1",
     "bcrypt": "^6.0.0",
+    "ioredis": "^5.10.1",
     "joi": "^17.13.3",
+    "jose": "^6.2.3",
     "jsonwebtoken": "^9.0.3",
+    "lucide-react": "^1.14.0",
     "next": "^16.2.4",
     "pg": "^8.18.0",
+    "prisma": "^6.19.3",
     "react": "^19.2.3",
     "react-dom": "^19.2.3"
   },
   "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "@tailwindcss/postcss": "^4.2.4",
     "@types/node": "^25.6.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "@eslint/js": "^9.0.0",
     "eslint": "^9.0.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
@@ -47,9 +54,11 @@
     "husky": "^9.1.7",
     "lint-staged": "^15.2.10",
     "node-pg-migrate": "^8.0.4",
+    "postcss": "^8.5.12",
     "prettier": "^3.3.3",
-    "supertest": "^7.2.2",
+    "tailwindcss": "^4.2.4",
     "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.1",
     "vitest": "^4.1.5"
   },
   "lint-staged": {

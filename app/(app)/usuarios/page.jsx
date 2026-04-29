@@ -1,7 +1,7 @@
 "use client";
 
-import RoleGuard from "../../../src/components/RoleGuard";
-import Usuarios from "../../../src/views/Usuarios";
+import RoleGuard from "@/components/auth/RoleGuard";
+import Usuarios from "@/features/usuarios/Usuarios";
 
 export default function UsuariosPage() {
   return (

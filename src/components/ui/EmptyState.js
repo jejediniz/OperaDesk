@@ -5,6 +5,7 @@ export default function EmptyState({
   description,
   actionLabel,
   onAction,
+  children,
 }) {
   return (
     <div className="empty-state">
@@ -15,6 +16,7 @@ export default function EmptyState({
           {actionLabel}
         </Button>
       )}
+      {children}
     </div>
   );
 }
