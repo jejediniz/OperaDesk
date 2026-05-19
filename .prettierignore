@@ -1,0 +1,7 @@
+.next/
+node_modules/
+coverage/
+public/
+db/migrations/
+*.lock
+package-lock.json

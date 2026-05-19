@@ -10,10 +10,13 @@
 
 # production
 /build
+/.next
 
 # misc
 .DS_Store
+*.tsbuildinfo
 .env.local
+.env
 .env.development.local
 .env.test.local
 .env.production.local

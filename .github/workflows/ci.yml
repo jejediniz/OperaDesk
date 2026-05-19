@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Lint, typecheck e testes
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: operadesk
+          POSTGRES_PASSWORD: operadesk
+          POSTGRES_DB: operadesk
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U operadesk"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      NODE_ENV: test
+      JWT_SECRET: ci-secret-precisa-ter-no-minimo-trinta-e-dois-caracteres
+      JWT_EXPIRES_IN: 1h
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_USER: operadesk
+      DB_PASSWORD: operadesk
+      DB_NAME: operadesk
+      DATABASE_URL: postgres://operadesk:operadesk@localhost:5432/operadesk
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Format check
+        run: npm run format:check
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build Next.js
+        run: npm run build
+
+      - name: Migrar DB
+        run: npm run db:migrate
+
+      - name: Testes
+        run: npm test

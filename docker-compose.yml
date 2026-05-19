@@ -1,0 +1,33 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: operadesk-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: operadesk-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: operadesk
+      POSTGRES_USER: operadesk
+      POSTGRES_PASSWORD: operadesk
+    ports:
+      - "5433:5432"
+    volumes:
+      - operadesk_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U operadesk -d operadesk"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  operadesk_postgres_data:

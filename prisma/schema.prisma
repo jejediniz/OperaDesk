@@ -1,0 +1,50 @@
+
+// -----------------------------------------------------------------------------
+// Futuro — integração com chamados (não criar tabela agora até o vínculo com chamados estar definido).
+// Prisma exemplo:
+//
+// model ChamadoAtivo {
+//   id         String   @id @default(uuid()) @db.Uuid
+//   chamadoId  Int      @map("chamado_id")
+//   ativoId    String   @map("ativo_id") @db.Uuid
+//   criadoEm   DateTime @default(now()) @map("criado_em")
+//   ativoRef   Ativo    @relation(fields: [ativoId], references: [id], onDelete: Cascade)
+//
+//   @@unique([chamadoId, ativoId])
+//   @@map("chamado_ativos")
+// }
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Ativo {
+  id               String    @id @default(uuid()) @db.Uuid
+  empresaId        String?   @map("empresa_id")
+  nome             String
+  /// Único global no MVP (mono-empresa). Futuro: índices parciais por tenant.
+  numeroPatrimonio String    @unique @map("numero_patrimonio")
+  numeroSerie      String?   @map("numero_serie")
+  categoria        String?
+  marca            String?
+  modelo           String?
+  descricao        String?
+  status           String    @default("disponivel")
+  setor            String?
+  localizacao      String?
+  responsavel      String?
+  observacoes      String?
+  ativo             Boolean   @default(true)
+  criadoEm         DateTime  @default(now()) @map("criado_em")
+  atualizadoEm     DateTime  @updatedAt @map("atualizado_em")
+
+  @@index([status])
+  @@index([categoria])
+  @@index([ativo])
+  @@map("ativos")
+}

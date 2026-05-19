@@ -1,0 +1,26 @@
+/* Tailwind 4: tema + utilitários sem Preflight.
+   O stylesheet principal (src/styles/index.css) é importado em app/layout.jsx
+   para evitar que o parser do @tailwindcss/postcss analise o ficheiro grande
+   como continuação deste e falhe em alguns ambientes (ex.: Turbopack). */
+/* Tailwind 4: dark: segue data-theme; zinc no escuro alinha ao navy #232b3e */
+@layer theme, utilities;
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+/* Cores alinhadas a :root / html[data-theme] em src/styles/index.css — use em utilitários Tailwind */
+@theme {
+  --color-od-bg: var(--bg);
+  --color-od-surface: var(--surface);
+  --color-od-surface-soft: var(--surface-soft);
+  --color-od-surface-muted: var(--surface-muted);
+  --color-od-surface-elevated: var(--surface-elevated);
+  --color-od-card: var(--card);
+  --color-od-border: var(--border);
+  --color-od-border-strong: var(--border-strong);
+  --color-od-text: var(--text);
+  --color-od-text-soft: var(--text-soft);
+  --color-od-muted: var(--muted);
+}
