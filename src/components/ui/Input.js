@@ -17,9 +17,7 @@ export default function Input({
 
   return (
     <label className={`field ${className}`}>
-      {label && (
-        <span className={`field-label${hideLabel ? " sr-only" : ""}`}>{label}</span>
-      )}
+      {label && <span className={`field-label${hideLabel ? " sr-only" : ""}`}>{label}</span>}
       <input
         id={id}
         className="input-field"

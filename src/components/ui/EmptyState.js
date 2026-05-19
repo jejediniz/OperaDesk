@@ -1,12 +1,6 @@
 import Button from "./Button";
 
-export default function EmptyState({
-  title,
-  description,
-  actionLabel,
-  onAction,
-  children,
-}) {
+export default function EmptyState({ title, description, actionLabel, onAction, children }) {
   return (
     <div className="empty-state">
       <h3>{title}</h3>

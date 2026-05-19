@@ -3,7 +3,7 @@ export function Skeleton({ width, height = 14, radius = 5, className = "", style
     width: width ?? "100%",
     height,
     borderRadius: radius,
-    ...style,
+    ...style
   };
   return <span className={`skeleton ${className}`.trim()} style={merged} aria-hidden="true" />;
 }

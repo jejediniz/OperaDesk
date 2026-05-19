@@ -1,334 +1,332 @@
-const {
-  PRIORIDADE_VALUES,
-  STATUS_VALUES
-} = require('../validators/chamadosSchemas')
+const { PRIORIDADE_VALUES, STATUS_VALUES } = require("../validators/chamadosSchemas");
 
 const ApiResponseEnvelope = {
-  type: 'object',
+  type: "object",
   properties: {
-    success: { type: 'boolean' },
-    message: { type: 'string' },
+    success: { type: "boolean" },
+    message: { type: "string" },
     data: {}
   },
-  required: ['success', 'message']
-}
+  required: ["success", "message"]
+};
 
 const ErrorEnvelope = {
-  type: 'object',
+  type: "object",
   properties: {
     success: { const: false },
     error: {
-      type: 'object',
+      type: "object",
       properties: {
-        message: { type: 'string' },
-        details: { type: 'array', items: { type: 'object' } }
+        message: { type: "string" },
+        details: { type: "array", items: { type: "object" } }
       },
-      required: ['message']
+      required: ["message"]
     }
   },
-  required: ['success', 'error']
-}
+  required: ["success", "error"]
+};
 
 const Usuario = {
-  type: 'object',
+  type: "object",
   properties: {
-    id: { type: 'integer' },
-    nome: { type: 'string' },
-    email: { type: 'string', format: 'email' },
-    tipo: { type: 'string', enum: ['comum', 'ti'] },
-    admin: { type: 'boolean' },
-    ativo: { type: 'boolean' }
+    id: { type: "integer" },
+    nome: { type: "string" },
+    email: { type: "string", format: "email" },
+    tipo: { type: "string", enum: ["comum", "ti"] },
+    admin: { type: "boolean" },
+    ativo: { type: "boolean" }
   }
-}
+};
 
 const Chamado = {
-  type: 'object',
+  type: "object",
   properties: {
-    id: { type: 'integer' },
-    titulo: { type: 'string' },
-    descricao: { type: 'string' },
-    status: { type: 'string', enum: STATUS_VALUES },
-    prioridade: { type: 'string', enum: PRIORIDADE_VALUES },
-    setor: { type: 'string', nullable: true },
-    usuario_id: { type: 'integer' },
-    tecnico_id: { type: 'integer', nullable: true },
-    created_at: { type: 'string', format: 'date-time' },
-    updated_at: { type: 'string', format: 'date-time' },
-    solicitante: { $ref: '#/components/schemas/Usuario' },
-    tecnico: { $ref: '#/components/schemas/Usuario', nullable: true }
+    id: { type: "integer" },
+    titulo: { type: "string" },
+    descricao: { type: "string" },
+    status: { type: "string", enum: STATUS_VALUES },
+    prioridade: { type: "string", enum: PRIORIDADE_VALUES },
+    setor: { type: "string", nullable: true },
+    usuario_id: { type: "integer" },
+    tecnico_id: { type: "integer", nullable: true },
+    created_at: { type: "string", format: "date-time" },
+    updated_at: { type: "string", format: "date-time" },
+    solicitante: { $ref: "#/components/schemas/Usuario" },
+    tecnico: { $ref: "#/components/schemas/Usuario", nullable: true }
   }
-}
+};
 
 const ChamadoMetrics = {
-  type: 'object',
+  type: "object",
   properties: {
-    total: { type: 'integer' },
-    abertos: { type: 'integer' },
-    em_andamento: { type: 'integer' },
-    concluidos: { type: 'integer' },
-    alta_prioridade_pendentes: { type: 'integer' },
-    sem_tecnico: { type: 'integer' }
+    total: { type: "integer" },
+    abertos: { type: "integer" },
+    em_andamento: { type: "integer" },
+    concluidos: { type: "integer" },
+    alta_prioridade_pendentes: { type: "integer" },
+    sem_tecnico: { type: "integer" }
   }
-}
+};
 
 const PaginationMeta = {
-  type: 'object',
+  type: "object",
   properties: {
-    page: { type: 'integer' },
-    limit: { type: 'integer' },
-    total: { type: 'integer' },
-    totalPages: { type: 'integer' }
+    page: { type: "integer" },
+    limit: { type: "integer" },
+    total: { type: "integer" },
+    totalPages: { type: "integer" }
   }
-}
+};
 
 const okJson = (description, schemaRef) => ({
   description,
   content: {
-    'application/json': {
+    "application/json": {
       schema: schemaRef
         ? {
-            allOf: [
-              ApiResponseEnvelope,
-              { type: 'object', properties: { data: schemaRef } }
-            ]
+            allOf: [ApiResponseEnvelope, { type: "object", properties: { data: schemaRef } }]
           }
         : ApiResponseEnvelope
     }
   }
-})
+});
 
 const errorJson = (description) => ({
   description,
-  content: { 'application/json': { schema: ErrorEnvelope } }
-})
+  content: { "application/json": { schema: ErrorEnvelope } }
+});
 
 const spec = {
-  openapi: '3.0.3',
+  openapi: "3.0.3",
   info: {
-    title: 'OperaDesk API',
-    version: '1.1.0',
+    title: "OperaDesk API",
+    version: "1.1.0",
     description:
-      'API de autenticação, usuários e chamados. Autenticação via cookie httpOnly emitido em /auth/login.'
+      "API de autenticação, usuários e chamados. Autenticação via cookie httpOnly emitido em /auth/login."
   },
-  servers: [{ url: '/api' }],
+  servers: [{ url: "/api" }],
   tags: [
-    { name: 'Auth' },
-    { name: 'Users' },
-    { name: 'Chamados' },
-    { name: 'Interações' },
-    { name: 'Health' }
+    { name: "Auth" },
+    { name: "Users" },
+    { name: "Chamados" },
+    { name: "Interações" },
+    { name: "Health" }
   ],
   paths: {
-    '/health': {
+    "/health": {
       get: {
-        tags: ['Health'],
-        summary: 'Health check (Postgres + serviço)',
+        tags: ["Health"],
+        summary: "Health check (Postgres + serviço)",
         responses: {
-          200: { description: 'Aplicação saudável' },
-          503: errorJson('Banco indisponível')
+          200: { description: "Aplicação saudável" },
+          503: errorJson("Banco indisponível")
         }
       }
     },
-    '/health/live': {
+    "/health/live": {
       get: {
-        tags: ['Health'],
-        summary: 'Liveness probe (sem checagens externas)',
-        responses: { 200: { description: 'Aplicação viva' } }
+        tags: ["Health"],
+        summary: "Liveness probe (sem checagens externas)",
+        responses: { 200: { description: "Aplicação viva" } }
       }
     },
-    '/auth/login': {
+    "/auth/login": {
       post: {
-        tags: ['Auth'],
-        summary: 'Autenticar usuário',
+        tags: ["Auth"],
+        summary: "Autenticar usuário",
         requestBody: {
           required: true,
           content: {
-            'application/json': {
+            "application/json": {
               schema: {
-                type: 'object',
-                required: ['email', 'senha'],
+                type: "object",
+                required: ["email", "senha"],
                 properties: {
-                  email: { type: 'string', format: 'email' },
-                  senha: { type: 'string' }
+                  email: { type: "string", format: "email" },
+                  senha: { type: "string" }
                 }
               }
             }
           }
         },
         responses: {
-          200: okJson('Login realizado com sucesso', { $ref: '#/components/schemas/Usuario' }),
-          400: errorJson('Dados inválidos'),
-          401: errorJson('Credenciais inválidas'),
-          429: errorJson('Muitas tentativas')
+          200: okJson("Login realizado com sucesso", { $ref: "#/components/schemas/Usuario" }),
+          400: errorJson("Dados inválidos"),
+          401: errorJson("Credenciais inválidas"),
+          429: errorJson("Muitas tentativas")
         }
       }
     },
-    '/auth/register': {
+    "/auth/register": {
       post: {
-        tags: ['Auth'],
-        summary: 'Registrar usuário (apenas admin)',
+        tags: ["Auth"],
+        summary: "Registrar usuário (apenas admin)",
         security: [{ cookieAuth: [] }],
         responses: {
-          201: okJson('Usuário registrado'),
-          401: errorJson('Não autenticado'),
-          403: errorJson('Acesso restrito a admin'),
-          409: errorJson('Email já cadastrado')
+          201: okJson("Usuário registrado"),
+          401: errorJson("Não autenticado"),
+          403: errorJson("Acesso restrito a admin"),
+          409: errorJson("Email já cadastrado")
         }
       }
     },
-    '/auth/logout': {
+    "/auth/logout": {
       post: {
-        tags: ['Auth'],
-        summary: 'Encerrar a sessão (limpa o cookie httpOnly)',
-        responses: { 204: { description: 'Logout realizado' } }
+        tags: ["Auth"],
+        summary: "Encerrar a sessão (limpa o cookie httpOnly)",
+        responses: { 204: { description: "Logout realizado" } }
       }
     },
-    '/auth/me': {
+    "/auth/me": {
       get: {
-        tags: ['Auth'],
-        summary: 'Recuperar a sessão atual',
+        tags: ["Auth"],
+        summary: "Recuperar a sessão atual",
         security: [{ cookieAuth: [] }],
         responses: {
-          200: okJson('Sessão válida', { $ref: '#/components/schemas/Usuario' }),
-          401: errorJson('Sessão inválida')
+          200: okJson("Sessão válida", { $ref: "#/components/schemas/Usuario" }),
+          401: errorJson("Sessão inválida")
         }
       }
     },
-    '/users': {
+    "/users": {
       get: {
-        tags: ['Users'],
-        summary: 'Listar usuários (admin)',
+        tags: ["Users"],
+        summary: "Listar usuários (admin)",
         security: [{ cookieAuth: [] }],
         responses: {
-          200: okJson('Usuários listados', {
-            type: 'array',
-            items: { $ref: '#/components/schemas/Usuario' }
+          200: okJson("Usuários listados", {
+            type: "array",
+            items: { $ref: "#/components/schemas/Usuario" }
           }),
-          403: errorJson('Acesso restrito')
+          403: errorJson("Acesso restrito")
         }
       },
       post: {
-        tags: ['Users'],
-        summary: 'Criar usuário (admin)',
+        tags: ["Users"],
+        summary: "Criar usuário (admin)",
         security: [{ cookieAuth: [] }],
         responses: {
-          201: okJson('Usuário criado', { $ref: '#/components/schemas/Usuario' }),
-          409: errorJson('Email já cadastrado')
+          201: okJson("Usuário criado", { $ref: "#/components/schemas/Usuario" }),
+          409: errorJson("Email já cadastrado")
         }
       }
     },
-    '/users/me': {
+    "/users/me": {
       get: {
-        tags: ['Users'],
-        summary: 'Sessão simplificada via cookie',
+        tags: ["Users"],
+        summary: "Sessão simplificada via cookie",
         security: [{ cookieAuth: [] }],
-        responses: { 200: okJson('Acesso autorizado') }
+        responses: { 200: okJson("Acesso autorizado") }
       },
       patch: {
-        tags: ['Users'],
-        summary: 'Alterar a própria senha',
+        tags: ["Users"],
+        summary: "Alterar a própria senha",
         security: [{ cookieAuth: [] }],
         requestBody: {
           required: true,
           content: {
-            'application/json': {
+            "application/json": {
               schema: {
-                type: 'object',
-                required: ['senhaAtual', 'senhaNova'],
+                type: "object",
+                required: ["senhaAtual", "senhaNova"],
                 properties: {
-                  senhaAtual: { type: 'string', minLength: 8 },
-                  senhaNova: { type: 'string', minLength: 8, maxLength: 120 }
+                  senhaAtual: { type: "string", minLength: 8 },
+                  senhaNova: { type: "string", minLength: 8, maxLength: 120 }
                 }
               }
             }
           }
         },
         responses: {
-          200: okJson('Senha atualizada'),
-          400: errorJson('Validação ou nova senha inválida'),
-          401: errorJson('Senha atual incorreta')
+          200: okJson("Senha atualizada"),
+          400: errorJson("Validação ou nova senha inválida"),
+          401: errorJson("Senha atual incorreta")
         }
       }
     },
-    '/users/tecnicos': {
+    "/users/tecnicos": {
       get: {
-        tags: ['Users'],
-        summary: 'Listar técnicos',
+        tags: ["Users"],
+        summary: "Listar técnicos",
         security: [{ cookieAuth: [] }],
         responses: {
-          200: okJson('Técnicos listados', {
-            type: 'array',
-            items: { $ref: '#/components/schemas/Usuario' }
+          200: okJson("Técnicos listados", {
+            type: "array",
+            items: { $ref: "#/components/schemas/Usuario" }
           })
         }
       }
     },
-    '/users/{id}': {
-      parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
+    "/users/{id}": {
+      parameters: [{ name: "id", in: "path", required: true, schema: { type: "integer" } }],
       get: {
-        tags: ['Users'],
+        tags: ["Users"],
         security: [{ cookieAuth: [] }],
-        summary: 'Buscar usuário por ID (admin)',
+        summary: "Buscar usuário por ID (admin)",
         responses: {
-          200: okJson('Usuário encontrado', { $ref: '#/components/schemas/Usuario' }),
-          404: errorJson('Usuário não encontrado')
+          200: okJson("Usuário encontrado", { $ref: "#/components/schemas/Usuario" }),
+          404: errorJson("Usuário não encontrado")
         }
       },
       put: {
-        tags: ['Users'],
+        tags: ["Users"],
         security: [{ cookieAuth: [] }],
-        summary: 'Atualizar usuário (admin)',
-        responses: { 200: okJson('Usuário atualizado') }
+        summary: "Atualizar usuário (admin)",
+        responses: { 200: okJson("Usuário atualizado") }
       },
       delete: {
-        tags: ['Users'],
+        tags: ["Users"],
         security: [{ cookieAuth: [] }],
-        summary: 'Excluir usuário (admin)',
-        responses: { 204: { description: 'Usuário removido' } }
+        summary: "Excluir usuário (admin)",
+        responses: { 204: { description: "Usuário removido" } }
       }
     },
-    '/chamados': {
+    "/chamados": {
       get: {
-        tags: ['Chamados'],
-        summary: 'Listar chamados (com paginação, filtros e busca textual)',
+        tags: ["Chamados"],
+        summary: "Listar chamados (com paginação, filtros e busca textual)",
         security: [{ cookieAuth: [] }],
         parameters: [
-          { name: 'page', in: 'query', schema: { type: 'integer', minimum: 1, default: 1 } },
-          { name: 'limit', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 200, default: 20 } },
-          { name: 'status', in: 'query', schema: { type: 'string', enum: STATUS_VALUES } },
-          { name: 'prioridade', in: 'query', schema: { type: 'string', enum: PRIORIDADE_VALUES } },
-          { name: 'usuarioId', in: 'query', schema: { type: 'integer', minimum: 1 } },
+          { name: "page", in: "query", schema: { type: "integer", minimum: 1, default: 1 } },
           {
-            name: 'tecnicoId',
-            in: 'query',
+            name: "limit",
+            in: "query",
+            schema: { type: "integer", minimum: 1, maximum: 200, default: 20 }
+          },
+          { name: "status", in: "query", schema: { type: "string", enum: STATUS_VALUES } },
+          { name: "prioridade", in: "query", schema: { type: "string", enum: PRIORIDADE_VALUES } },
+          { name: "usuarioId", in: "query", schema: { type: "integer", minimum: 1 } },
+          {
+            name: "tecnicoId",
+            in: "query",
             description: 'ID do técnico, ou "me" (autenticado) ou "sem" (sem responsável)',
             schema: {
               oneOf: [
-                { type: 'integer', minimum: 1 },
-                { type: 'string', enum: ['me', 'sem'] }
+                { type: "integer", minimum: 1 },
+                { type: "string", enum: ["me", "sem"] }
               ]
             }
           },
           {
-            name: 'q',
-            in: 'query',
-            description: 'Busca textual em título, descrição ou ID',
-            schema: { type: 'string', maxLength: 160 }
+            name: "q",
+            in: "query",
+            description: "Busca textual em título, descrição ou ID",
+            schema: { type: "string", maxLength: 160 }
           }
         ],
         responses: {
           200: {
-            description: 'Lista paginada de chamados',
+            description: "Lista paginada de chamados",
             content: {
-              'application/json': {
+              "application/json": {
                 schema: {
                   allOf: [
                     ApiResponseEnvelope,
                     {
-                      type: 'object',
+                      type: "object",
                       properties: {
-                        data: { type: 'array', items: { $ref: '#/components/schemas/Chamado' } },
-                        meta: { $ref: '#/components/schemas/PaginationMeta' }
+                        data: { type: "array", items: { $ref: "#/components/schemas/Chamado" } },
+                        meta: { $ref: "#/components/schemas/PaginationMeta" }
                       }
                     }
                   ]
@@ -339,101 +337,101 @@ const spec = {
         }
       },
       post: {
-        tags: ['Chamados'],
-        summary: 'Criar chamado',
+        tags: ["Chamados"],
+        summary: "Criar chamado",
         security: [{ cookieAuth: [] }],
         requestBody: {
           required: true,
           content: {
-            'application/json': {
+            "application/json": {
               schema: {
-                type: 'object',
-                required: ['titulo', 'descricao'],
+                type: "object",
+                required: ["titulo", "descricao"],
                 properties: {
-                  titulo: { type: 'string', minLength: 3, maxLength: 200 },
-                  descricao: { type: 'string', minLength: 3, maxLength: 2000 },
-                  prioridade: { type: 'string', enum: PRIORIDADE_VALUES },
-                  tecnicoId: { type: 'integer', minimum: 1 },
-                  setor: { type: 'string', minLength: 2, maxLength: 120 }
+                  titulo: { type: "string", minLength: 3, maxLength: 200 },
+                  descricao: { type: "string", minLength: 3, maxLength: 2000 },
+                  prioridade: { type: "string", enum: PRIORIDADE_VALUES },
+                  tecnicoId: { type: "integer", minimum: 1 },
+                  setor: { type: "string", minLength: 2, maxLength: 120 }
                 }
               }
             }
           }
         },
         responses: {
-          201: okJson('Chamado criado', { $ref: '#/components/schemas/Chamado' }),
-          400: errorJson('Dados inválidos')
+          201: okJson("Chamado criado", { $ref: "#/components/schemas/Chamado" }),
+          400: errorJson("Dados inválidos")
         }
       }
     },
-    '/chamados/metrics': {
+    "/chamados/metrics": {
       get: {
-        tags: ['Chamados'],
-        summary: 'Métricas agregadas para o dashboard (escopo conforme papel)',
+        tags: ["Chamados"],
+        summary: "Métricas agregadas para o dashboard (escopo conforme papel)",
         security: [{ cookieAuth: [] }],
         responses: {
-          200: okJson('Métricas calculadas', { $ref: '#/components/schemas/ChamadoMetrics' })
+          200: okJson("Métricas calculadas", { $ref: "#/components/schemas/ChamadoMetrics" })
         }
       }
     },
-    '/chamados/{id}': {
-      parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
+    "/chamados/{id}": {
+      parameters: [{ name: "id", in: "path", required: true, schema: { type: "integer" } }],
       get: {
-        tags: ['Chamados'],
+        tags: ["Chamados"],
         security: [{ cookieAuth: [] }],
-        summary: 'Buscar chamado por ID',
+        summary: "Buscar chamado por ID",
         responses: {
-          200: okJson('Chamado encontrado', { $ref: '#/components/schemas/Chamado' }),
-          404: errorJson('Chamado não encontrado')
+          200: okJson("Chamado encontrado", { $ref: "#/components/schemas/Chamado" }),
+          404: errorJson("Chamado não encontrado")
         }
       },
       put: {
-        tags: ['Chamados'],
+        tags: ["Chamados"],
         security: [{ cookieAuth: [] }],
-        summary: 'Atualizar chamado',
+        summary: "Atualizar chamado",
         responses: {
-          200: okJson('Chamado atualizado', { $ref: '#/components/schemas/Chamado' }),
-          403: errorJson('Operação não permitida')
+          200: okJson("Chamado atualizado", { $ref: "#/components/schemas/Chamado" }),
+          403: errorJson("Operação não permitida")
         }
       },
       delete: {
-        tags: ['Chamados'],
+        tags: ["Chamados"],
         security: [{ cookieAuth: [] }],
-        summary: 'Excluir chamado',
-        responses: { 204: { description: 'Chamado removido' } }
+        summary: "Excluir chamado",
+        responses: { 204: { description: "Chamado removido" } }
       }
     },
-    '/chamados/{id}/interacoes': {
-      parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
+    "/chamados/{id}/interacoes": {
+      parameters: [{ name: "id", in: "path", required: true, schema: { type: "integer" } }],
       get: {
-        tags: ['Interações'],
+        tags: ["Interações"],
         security: [{ cookieAuth: [] }],
-        summary: 'Listar interações do chamado',
-        responses: { 200: okJson('Interações listadas') }
+        summary: "Listar interações do chamado",
+        responses: { 200: okJson("Interações listadas") }
       },
       post: {
-        tags: ['Interações'],
+        tags: ["Interações"],
         security: [{ cookieAuth: [] }],
-        summary: 'Criar interação no chamado',
+        summary: "Criar interação no chamado",
         requestBody: {
           required: true,
           content: {
-            'application/json': {
+            "application/json": {
               schema: {
-                type: 'object',
-                required: ['mensagem'],
+                type: "object",
+                required: ["mensagem"],
                 properties: {
-                  mensagem: { type: 'string', minLength: 1, maxLength: 4000 },
-                  tipo: { type: 'string', enum: ['publica', 'interna'] }
+                  mensagem: { type: "string", minLength: 1, maxLength: 4000 },
+                  tipo: { type: "string", enum: ["publica", "interna"] }
                 }
               }
             }
           }
         },
         responses: {
-          201: okJson('Interação criada'),
-          403: errorJson('Operação não permitida'),
-          404: errorJson('Chamado não encontrado')
+          201: okJson("Interação criada"),
+          403: errorJson("Operação não permitida"),
+          404: errorJson("Chamado não encontrado")
         }
       }
     }
@@ -441,9 +439,9 @@ const spec = {
   components: {
     securitySchemes: {
       cookieAuth: {
-        type: 'apiKey',
-        in: 'cookie',
-        name: 'operadesk_session'
+        type: "apiKey",
+        in: "cookie",
+        name: "operadesk_session"
       }
     },
     schemas: {
@@ -453,7 +451,7 @@ const spec = {
       PaginationMeta
     }
   }
-}
+};
 
 function renderDocsHtml(jsonUrl) {
   return `<!DOCTYPE html>
@@ -489,10 +487,10 @@ function renderDocsHtml(jsonUrl) {
           })
       </script>
     </body>
-  </html>`
+  </html>`;
 }
 
 module.exports = {
   spec,
   renderDocsHtml
-}
+};

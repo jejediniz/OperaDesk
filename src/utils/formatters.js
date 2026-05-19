@@ -14,7 +14,7 @@ export function formatDateTime(value) {
   const data = new Date(value);
   return `${data.toLocaleDateString("pt-BR")} ${data.toLocaleTimeString("pt-BR", {
     hour: "2-digit",
-    minute: "2-digit",
+    minute: "2-digit"
   })}`;
 }
 
@@ -24,7 +24,7 @@ const UNIDADES = [
   { limite: 86400, divisor: 3600, nome: "hora" },
   { limite: 2592000, divisor: 86400, nome: "dia" },
   { limite: 31536000, divisor: 2592000, nome: "mês" },
-  { limite: Infinity, divisor: 31536000, nome: "ano" },
+  { limite: Infinity, divisor: 31536000, nome: "ano" }
 ];
 
 export function formatRelative(value, agora = new Date()) {

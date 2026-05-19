@@ -1,4 +1,4 @@
-const pool = require('../config/database')
+const pool = require("../config/database");
 
 async function record({ action, actorId, targetType, targetId, requestId, ip, metadata }) {
   await pool.query(
@@ -13,24 +13,24 @@ async function record({ action, actorId, targetType, targetId, requestId, ip, me
       ip ?? null,
       metadata ? JSON.stringify(metadata) : null
     ]
-  )
+  );
 }
 
 async function listRecent({ limit = 50, action, actorId } = {}) {
-  const values = []
-  const conditions = []
+  const values = [];
+  const conditions = [];
 
   if (action) {
-    values.push(action)
-    conditions.push(`action = $${values.length}`)
+    values.push(action);
+    conditions.push(`action = $${values.length}`);
   }
   if (actorId) {
-    values.push(actorId)
-    conditions.push(`actor_id = $${values.length}`)
+    values.push(actorId);
+    conditions.push(`actor_id = $${values.length}`);
   }
 
-  const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
-  values.push(limit)
+  const where = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+  values.push(limit);
 
   const { rows } = await pool.query(
     `SELECT id, action, actor_id, target_type, target_id, request_id, ip, metadata, created_at
@@ -39,12 +39,12 @@ async function listRecent({ limit = 50, action, actorId } = {}) {
      ORDER BY id DESC
      LIMIT $${values.length}`,
     values
-  )
+  );
 
-  return rows
+  return rows;
 }
 
 module.exports = {
   listRecent,
   record
-}
+};

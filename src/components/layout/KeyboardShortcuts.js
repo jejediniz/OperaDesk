@@ -7,7 +7,7 @@ const ATALHOS = [
   { tecla: "N", descricao: "Abrir um novo chamado" },
   { tecla: "/", descricao: "Focar o campo de busca da tela" },
   { tecla: "?", descricao: "Mostrar/esconder esta ajuda" },
-  { tecla: "Esc", descricao: "Fechar diálogos e menus abertos" },
+  { tecla: "Esc", descricao: "Fechar diálogos e menus abertos" }
 ];
 
 function elementoEhEditavel(target) {
@@ -22,7 +22,7 @@ function focarBusca() {
     'input[type="search"]',
     'input[placeholder*="usc" i]',
     'input[name*="busc" i]',
-    'input[aria-label*="busc" i]',
+    'input[aria-label*="busc" i]'
   ].join(", ");
   const alvo = document.querySelector(seletor);
   if (alvo && typeof alvo.focus === "function") {

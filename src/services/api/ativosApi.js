@@ -15,7 +15,7 @@ function unwrapPayload(envelope) {
   if (Object.prototype.hasOwnProperty.call(envelope, "data")) {
     return {
       data: envelope.data ?? null,
-      meta: envelope.meta ?? null,
+      meta: envelope.meta ?? null
     };
   }
 
@@ -37,7 +37,7 @@ export async function obterResumoAtivos() {
     emManutencao: 0,
     danificado: 0,
     extraviado: 0,
-    baixado: 0,
+    baixado: 0
   };
 }
 
@@ -53,7 +53,7 @@ export async function listarAtivos(params = {}) {
           total: items.length,
           page: params.page ?? 1,
           limit: params.limit ?? 100,
-          totalPages: 1,
+          totalPages: 1
         };
 
   if (typeof safeMeta.total !== "number") {
@@ -62,7 +62,7 @@ export async function listarAtivos(params = {}) {
 
   return {
     items,
-    meta: safeMeta,
+    meta: safeMeta
   };
 }
 
@@ -89,7 +89,7 @@ export async function exportarAtivosCsv(params = {}) {
       method: "GET",
       credentials: "include",
       cache: "no-store",
-      signal: controller.signal,
+      signal: controller.signal
     });
   } catch (err) {
     if (err?.name === "AbortError") {
@@ -144,7 +144,10 @@ export async function atualizarAtivo(id, dados) {
   const envelope = await http.put(`/ativos/${id}`, dados);
   const { data } = unwrapPayload(envelope);
   if (!data?.id) {
-    throw new HttpError("O servidor não devolveu o registro atualizado.", { status: 0, details: null });
+    throw new HttpError("O servidor não devolveu o registro atualizado.", {
+      status: 0,
+      details: null
+    });
   }
   return data;
 }

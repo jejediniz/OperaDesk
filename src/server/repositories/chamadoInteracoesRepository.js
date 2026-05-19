@@ -1,15 +1,9 @@
-const pool = require('../config/database')
+const pool = require("../config/database");
 
 function mapInteracao(row) {
-  if (!row) return null
+  if (!row) return null;
 
-  const {
-    autor_nome,
-    autor_email,
-    autor_tipo,
-    autor_admin,
-    ...rest
-  } = row
+  const { autor_nome, autor_email, autor_tipo, autor_admin, ...rest } = row;
 
   return {
     ...rest,
@@ -20,16 +14,16 @@ function mapInteracao(row) {
       tipo: autor_tipo,
       admin: autor_admin
     }
-  }
+  };
 }
 
 async function listarPorChamado(chamadoId, { incluirInternas = false } = {}) {
-  const values = [chamadoId]
-  let filtroTipo = ''
+  const values = [chamadoId];
+  let filtroTipo = "";
 
   if (!incluirInternas) {
-    values.push('interna')
-    filtroTipo = `AND ci.tipo <> $${values.length}`
+    values.push("interna");
+    filtroTipo = `AND ci.tipo <> $${values.length}`;
   }
 
   const query = `
@@ -44,13 +38,13 @@ async function listarPorChamado(chamadoId, { incluirInternas = false } = {}) {
     WHERE ci.chamado_id = $1
     ${filtroTipo}
     ORDER BY ci.created_at ASC, ci.id ASC
-  `
+  `;
 
-  const { rows } = await pool.query(query, values)
-  return rows.map(mapInteracao)
+  const { rows } = await pool.query(query, values);
+  return rows.map(mapInteracao);
 }
 
-async function criar({ chamadoId, autorId, mensagem, tipo = 'publica' }) {
+async function criar({ chamadoId, autorId, mensagem, tipo = "publica" }) {
   const query = `
     WITH nova AS (
       INSERT INTO chamado_interacoes (chamado_id, autor_id, mensagem, tipo)
@@ -65,13 +59,13 @@ async function criar({ chamadoId, autorId, mensagem, tipo = 'publica' }) {
       autor.admin AS autor_admin
     FROM nova
     JOIN usuarios autor ON autor.id = nova.autor_id
-  `
+  `;
 
-  const { rows } = await pool.query(query, [chamadoId, autorId, mensagem, tipo])
-  return mapInteracao(rows[0])
+  const { rows } = await pool.query(query, [chamadoId, autorId, mensagem, tipo]);
+  return mapInteracao(rows[0]);
 }
 
 module.exports = {
   criar,
   listarPorChamado
-}
+};

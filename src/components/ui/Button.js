@@ -1,13 +1,9 @@
 import React, { forwardRef } from "react";
 
-const Button = forwardRef(function Button({
-  variant = "primary",
-  size = "md",
-  className = "",
-  type = "button",
-  children,
-  ...props
-}, ref) {
+const Button = forwardRef(function Button(
+  { variant = "primary", size = "md", className = "", type = "button", children, ...props },
+  ref
+) {
   const variantClass = `btn-${variant}`;
   const sizeClass = `btn-${size}`;
   return (

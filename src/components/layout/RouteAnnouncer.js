@@ -8,7 +8,7 @@ const ROUTE_LABELS = [
   ["/usuarios", "Usuários"],
   ["/abrir-chamado", "Abrir chamado"],
   ["/meus-chamados", "Meus chamados"],
-  ["/chamados", "Gestão de chamados"],
+  ["/chamados", "Gestão de chamados"]
 ];
 
 function labelForPath(pathname) {

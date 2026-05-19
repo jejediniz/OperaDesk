@@ -9,7 +9,7 @@ import {
   PageHeader,
   Select,
   SkeletonCard,
-  Textarea,
+  Textarea
 } from "@/components/ui";
 
 export default function DevUiGallery() {
@@ -23,7 +23,10 @@ export default function DevUiGallery() {
       />
 
       <section className="space-y-4" aria-labelledby="dev-ui-buttons">
-        <h2 id="dev-ui-buttons" className="text-sm font-semibold uppercase tracking-wide text-od-muted">
+        <h2
+          id="dev-ui-buttons"
+          className="text-sm font-semibold uppercase tracking-wide text-od-muted"
+        >
           Botões
         </h2>
         <div className="flex flex-wrap gap-3">
@@ -38,7 +41,10 @@ export default function DevUiGallery() {
       </section>
 
       <section className="space-y-4" aria-labelledby="dev-ui-fields">
-        <h2 id="dev-ui-fields" className="text-sm font-semibold uppercase tracking-wide text-od-muted">
+        <h2
+          id="dev-ui-fields"
+          className="text-sm font-semibold uppercase tracking-wide text-od-muted"
+        >
           Campos
         </h2>
         <Card className="space-y-4 p-5">
@@ -53,22 +59,37 @@ export default function DevUiGallery() {
             <option value="a">Opção A</option>
             <option value="b">Opção B</option>
           </Select>
-          <Textarea label="Observações" name="obs" value="" onChange={() => {}} rows={3} placeholder="Texto longo" />
+          <Textarea
+            label="Observações"
+            name="obs"
+            value=""
+            onChange={() => {}}
+            rows={3}
+            placeholder="Texto longo"
+          />
         </Card>
       </section>
 
       <section className="space-y-4" aria-labelledby="dev-ui-alerts">
-        <h2 id="dev-ui-alerts" className="text-sm font-semibold uppercase tracking-wide text-od-muted">
+        <h2
+          id="dev-ui-alerts"
+          className="text-sm font-semibold uppercase tracking-wide text-od-muted"
+        >
           Alertas
         </h2>
         <div className="space-y-3">
-          <div className="alert alert-error">Exemplo de mensagem de erro alinhada aos tokens do tema.</div>
+          <div className="alert alert-error">
+            Exemplo de mensagem de erro alinhada aos tokens do tema.
+          </div>
           <div className="alert alert-success">Exemplo de feedback de sucesso.</div>
         </div>
       </section>
 
       <section className="space-y-4" aria-labelledby="dev-ui-feedback">
-        <h2 id="dev-ui-feedback" className="text-sm font-semibold uppercase tracking-wide text-od-muted">
+        <h2
+          id="dev-ui-feedback"
+          className="text-sm font-semibold uppercase tracking-wide text-od-muted"
+        >
           Estado vazio e carregamento
         </h2>
         <div className="grid gap-6 md:grid-cols-2">
@@ -79,7 +100,9 @@ export default function DevUiGallery() {
             onAction={() => {}}
           />
           <Card className="p-5">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-od-muted">Skeleton</p>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-od-muted">
+              Skeleton
+            </p>
             <SkeletonCard lines={2} />
           </Card>
         </div>

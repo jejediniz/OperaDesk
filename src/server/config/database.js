@@ -1,11 +1,11 @@
-const { Pool } = require('pg')
-const { getEnv } = require('./env')
-const logger = require('../utils/logger')
+const { Pool } = require("pg");
+const { getEnv } = require("./env");
+const logger = require("../utils/logger");
 
-const globalForPg = globalThis
+const globalForPg = globalThis;
 
 function createPool() {
-  const { db } = getEnv()
+  const { db } = getEnv();
 
   return new Pool({
     host: db.host,
@@ -16,17 +16,17 @@ function createPool() {
     max: db.poolMax,
     idleTimeoutMillis: 30_000,
     connectionTimeoutMillis: 5_000
-  })
+  });
 }
 
-const pool = globalForPg.__operadeskPgPool ?? createPool()
+const pool = globalForPg.__operadeskPgPool ?? createPool();
 
-if (process.env.NODE_ENV !== 'production') {
-  globalForPg.__operadeskPgPool = pool
+if (process.env.NODE_ENV !== "production") {
+  globalForPg.__operadeskPgPool = pool;
 }
 
-pool.on('error', (err) => {
-  logger.error('pg_pool_error', { error: err?.message, code: err?.code })
-})
+pool.on("error", (err) => {
+  logger.error("pg_pool_error", { error: err?.message, code: err?.code });
+});
 
-module.exports = pool
+module.exports = pool;

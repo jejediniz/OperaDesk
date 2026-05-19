@@ -17,9 +17,7 @@ export default function Textarea({
 
   return (
     <label className={`field ${className}`}>
-      {label && (
-        <span className={`field-label${hideLabel ? " sr-only" : ""}`}>{label}</span>
-      )}
+      {label && <span className={`field-label${hideLabel ? " sr-only" : ""}`}>{label}</span>}
       <textarea
         id={id}
         className="textarea-field"

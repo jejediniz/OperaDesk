@@ -1,55 +1,55 @@
-const AppError = require('../utils/AppError')
-const userRepository = require('../repositories/userRepository')
-const logger = require('../utils/logger')
-const { compareSenha, hashSenha } = require('./authService')
+const AppError = require("../utils/AppError");
+const userRepository = require("../repositories/userRepository");
+const logger = require("../utils/logger");
+const { compareSenha, hashSenha } = require("./authService");
 
 exports.list = async () => {
-  return userRepository.list()
-}
+  return userRepository.list();
+};
 
 exports.listTecnicos = async () => {
-  return userRepository.listByTipo('ti')
-}
+  return userRepository.listByTipo("ti");
+};
 
 exports.findById = async (id) => {
-  return userRepository.findById(id)
-}
+  return userRepository.findById(id);
+};
 
 exports.create = async ({ nome, email, senha, tipo, admin, ativo }) => {
-  const existente = await userRepository.findByEmail(email)
+  const existente = await userRepository.findByEmail(email);
 
   if (existente) {
-    throw new AppError('Email já cadastrado', 409)
+    throw new AppError("Email já cadastrado", 409);
   }
 
-  const senha_hash = await hashSenha(senha)
+  const senha_hash = await hashSenha(senha);
 
   const usuario = await userRepository.create({
     nome,
     email,
     senha_hash,
-    tipo: tipo ?? 'comum',
+    tipo: tipo ?? "comum",
     admin: admin ?? false,
     ativo: ativo ?? true
-  })
+  });
 
-  logger.audit('usuario.criado', { usuarioId: usuario.id })
+  logger.audit("usuario.criado", { usuarioId: usuario.id });
 
-  return usuario
-}
+  return usuario;
+};
 
 exports.update = async (id, { nome, email, senha, tipo, admin, ativo }) => {
-  let senha_hash
+  let senha_hash;
 
   if (email) {
-    const existente = await userRepository.findByEmail(email)
+    const existente = await userRepository.findByEmail(email);
     if (existente && String(existente.id) !== String(id)) {
-      throw new AppError('Email já cadastrado', 409)
+      throw new AppError("Email já cadastrado", 409);
     }
   }
 
   if (senha) {
-    senha_hash = await hashSenha(senha)
+    senha_hash = await hashSenha(senha);
   }
 
   const usuario = await userRepository.update(id, {
@@ -59,50 +59,50 @@ exports.update = async (id, { nome, email, senha, tipo, admin, ativo }) => {
     tipo,
     admin,
     ativo
-  })
+  });
 
   if (usuario) {
-    logger.audit('usuario.atualizado', { usuarioId: usuario.id })
+    logger.audit("usuario.atualizado", { usuarioId: usuario.id });
   }
 
-  return usuario
-}
+  return usuario;
+};
 
 exports.remove = async (id) => {
-  const removido = await userRepository.remove(id)
+  const removido = await userRepository.remove(id);
 
   if (removido) {
-    logger.audit('usuario.removido', { usuarioId: removido.id })
+    logger.audit("usuario.removido", { usuarioId: removido.id });
   }
 
-  return removido
-}
+  return removido;
+};
 
 exports.changeOwnPassword = async (userId, { senhaAtual, senhaNova }) => {
   if (senhaAtual === senhaNova) {
-    throw new AppError('A nova senha deve ser diferente da atual', 400)
+    throw new AppError("A nova senha deve ser diferente da atual", 400);
   }
 
-  const row = await userRepository.findCredentialsForPasswordChange(userId)
+  const row = await userRepository.findCredentialsForPasswordChange(userId);
 
   if (!row) {
-    throw new AppError('Usuário não encontrado', 404)
+    throw new AppError("Usuário não encontrado", 404);
   }
 
   if (row.ativo === false) {
-    throw new AppError('Conta inativa', 403)
+    throw new AppError("Conta inativa", 403);
   }
 
-  const senhaOk = await compareSenha(senhaAtual, row.senha_hash)
+  const senhaOk = await compareSenha(senhaAtual, row.senha_hash);
 
   if (!senhaOk) {
-    throw new AppError('Senha atual incorreta', 401)
+    throw new AppError("Senha atual incorreta", 401);
   }
 
-  const senha_hash = await hashSenha(senhaNova)
-  await userRepository.update(userId, { senha_hash })
+  const senha_hash = await hashSenha(senhaNova);
+  await userRepository.update(userId, { senha_hash });
 
-  logger.audit('usuario.senha_alterada_propria', { usuarioId: userId })
+  logger.audit("usuario.senha_alterada_propria", { usuarioId: userId });
 
-  return true
-}
+  return true;
+};

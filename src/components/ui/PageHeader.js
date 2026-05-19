@@ -1,9 +1,4 @@
-export default function PageHeader({
-  title,
-  subtitle,
-  centered = false,
-  actions = null,
-}) {
+export default function PageHeader({ title, subtitle, centered = false, actions = null }) {
   return (
     <div className={`page-header${centered ? " page-header--centered" : ""}`}>
       <div>

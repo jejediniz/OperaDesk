@@ -20,8 +20,7 @@ function mensagemDeErro(error) {
   }
 
   if (typeof error === "object") {
-    const msg =
-      typeof error.message === "string" ? error.message.trim() : "";
+    const msg = typeof error.message === "string" ? error.message.trim() : "";
     if (msg !== "" && msg !== "undefined") return msg;
     if (typeof error.digest === "string" && error.digest) {
       return `Erro temporário (ref. ${error.digest})`;

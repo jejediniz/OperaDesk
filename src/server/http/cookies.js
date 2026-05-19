@@ -1,50 +1,50 @@
-const { getEnv } = require('../config/env')
+const { getEnv } = require("../config/env");
 
 function isProd() {
-  return process.env.NODE_ENV === 'production'
+  return process.env.NODE_ENV === "production";
 }
 
 function resolveCookieName() {
-  const env = getEnv()
-  if (isProd() && !env.cookieName.startsWith('__Host-')) {
-    return `__Host-${env.cookieName}`
+  const env = getEnv();
+  if (isProd() && !env.cookieName.startsWith("__Host-")) {
+    return `__Host-${env.cookieName}`;
   }
-  return env.cookieName
+  return env.cookieName;
 }
 
 function authCookieOptions() {
-  const env = getEnv()
+  const env = getEnv();
   return {
     name: resolveCookieName(),
     httpOnly: true,
     secure: isProd(),
-    sameSite: 'lax',
-    path: '/',
+    sameSite: "lax",
+    path: "/",
     maxAge: env.cookieMaxAgeSeconds
-  }
+  };
 }
 
 function setAuthCookie(response, token) {
-  const options = authCookieOptions()
-  response.cookies.set({ ...options, value: token })
-  return response
+  const options = authCookieOptions();
+  response.cookies.set({ ...options, value: token });
+  return response;
 }
 
 function clearAuthCookie(response) {
   response.cookies.set({
     name: resolveCookieName(),
-    value: '',
+    value: "",
     httpOnly: true,
     secure: isProd(),
-    sameSite: 'lax',
-    path: '/',
+    sameSite: "lax",
+    path: "/",
     maxAge: 0
-  })
-  return response
+  });
+  return response;
 }
 
 function readAuthCookie(request) {
-  return request.cookies?.get?.(resolveCookieName())?.value || null
+  return request.cookies?.get?.(resolveCookieName())?.value || null;
 }
 
 module.exports = {
@@ -53,4 +53,4 @@ module.exports = {
   readAuthCookie,
   resolveCookieName,
   setAuthCookie
-}
+};

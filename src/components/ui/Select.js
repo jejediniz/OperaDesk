@@ -18,9 +18,7 @@ export default function Select({
 
   return (
     <label className={`field ${className}`}>
-      {label && (
-        <span className={`field-label${hideLabel ? " sr-only" : ""}`}>{label}</span>
-      )}
+      {label && <span className={`field-label${hideLabel ? " sr-only" : ""}`}>{label}</span>}
       <select
         id={id}
         className="select-field"
